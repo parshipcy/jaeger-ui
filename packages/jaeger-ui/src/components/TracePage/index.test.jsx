@@ -211,6 +211,22 @@ describe('makeShortcutCallbacks()', () => {
       expect(adjRange).toHaveBeenLastCalledWith(...shortcutConfig[key]);
     });
   });
+
+  it('does not adjust range when the event target is inside an overlay menu', () => {
+    const callbacks = makeShortcutCallbacks(adjRange);
+    const menu = document.createElement('div');
+    menu.setAttribute('role', 'menu');
+    const menuItem = document.createElement('button');
+    menu.appendChild(menuItem);
+    document.body.appendChild(menu);
+
+    const fakeEvent = { target: menuItem, preventDefault: jest.fn() };
+    callbacks.zoomIn(fakeEvent);
+
+    expect(adjRange).not.toHaveBeenCalled();
+    expect(fakeEvent.preventDefault).not.toHaveBeenCalled();
+    menu.remove();
+  });
 });
 
 describe('<TracePage>', () => {
